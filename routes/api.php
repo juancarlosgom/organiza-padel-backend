@@ -31,6 +31,14 @@ Route::middleware('auth:sanctum')->group( function (){
     Route::post('/delete-reserve',[\App\Http\Controllers\ApiController::class, 'deleteReserve']);
     Route::post('/delete-user-open-game',[\App\Http\Controllers\ApiController::class,'deleteUserOpenGame']);
     Route::get('/get-id-user',[\App\Http\Controllers\ApiController::class,'getIdUser']);
+    Route::get('/get-admin-games',[\App\Http\Controllers\ApiController::class,'getAdminGame']);
+    Route::post('/get-data-game',[\App\Http\Controllers\ApiController::class,'getDataGame']);
+    Route::post('/add-result-game',[\App\Http\Controllers\ApiController::class,'addResultGame']);
+    Route::get('/get-confirm-games',[\App\Http\Controllers\ApiController::class,'getConfirmGame']);
+    Route::post('/add-confirm-game',[\App\Http\Controllers\ApiController::class,'addConfirmGame']);
+    Route::get('/get-history-user',[\App\Http\Controllers\ApiController::class,'getHistoryUser']);
+    Route::get('/get-statistics-user',[\App\Http\Controllers\ApiController::class,'getStatisticsUser']);
+    Route::put('/update-data-user',[\App\Http\Controllers\ApiController::class,'updateDataUser']);
 });
 
 Route::get('/check-open-games',[\App\Http\Controllers\ApiController::class, 'checkOpenGames']);

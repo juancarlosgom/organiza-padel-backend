@@ -97,6 +97,7 @@ class Pista extends Model
             'idReserva' => $idReserve,
             'jugador1' => $idPlayer1,
             'cerrada' => false,
+            'adminPartida' => $idPlayer1,
         ]);
     }
 

@@ -240,7 +240,19 @@ class ApiController extends Controller
         $token = $request->bearerToken();
         //Tabla users
         $usuario = User::getUser($token);
-        if(Partida::singUpGamePlayer($usuario->id,$numberPlayer,$idPartida)){
+        //Tabla jugadores
+        $usuarioAll = User::getUserAll($usuario->id);
+        //Obtengo los de la partida
+        $game = Partida::getOpenGame($idPartida);
+        //TODO - Comprobar si el usuario cumple requisitos para apuntarse a la partida
+        if(Partida::checkPlayerCanSingUp($game,$usuarioAll)){
+            return response()->json([
+                'status' => false,
+                'message' => 'Error no pertenece a la categoría o género',
+            ]);
+        }
+
+        if(Partida::singUpGamePlayer($usuarioAll,$numberPlayer,$idPartida)){
             return response()->json([
                 'status' => true,
                 'message' => 'Jugador incristo correctamente',
@@ -304,6 +316,95 @@ class ApiController extends Controller
         return response()->json([
             'status' => true,
             'id' => $user->id,
+        ]);
+    }
+
+    public function getAdminGame(Request $request){
+        $token = $request->bearerToken();
+        $user = User::getUser($token);
+        $games = User::getAdminUserGame($user);
+        return response()->json([
+            'status' => true,
+            'games' => $games,
+        ]);
+    }
+
+    public function getDataGame(Request $request){
+        $idGame = $request->getContent();
+        $game = Partida::getGame($idGame);
+        return response()->json([
+            'status' => true,
+            'game' => $game,
+        ]);
+    }
+
+    public function addResultGame(Request $request){
+        $data = $request->all();
+        $token = $request->bearerToken();
+        $user = User::getUser($token);
+        Partida::addResultGame($data[0],$user->id,$data[2],$data[1]);
+        // Borro de la BD la reserva y la partida.
+        Partida::deleteGameAndReserve($data[1]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Resultado añadido correctamente',
+        ]);
+    }
+
+    public function getConfirmGame(Request $request){
+        $token = $request->bearerToken();
+        $user = User::getUser($token);
+        $games = Partida::getConfirmGames($user->id);
+        $verifiedGames = Partida::checkNotConfirm($games,$user->id);
+        return response()->json([
+            'status' => true,
+            'message' => 'Confirmación obtenida correctamente',
+            'games' => $verifiedGames,
+        ]);
+    }
+
+    public function addConfirmGame(Request $request){
+        $data = $request->all();
+        $token = $request->bearerToken();
+        $user = User::getUser($token);
+        $idResultado = $data[0];
+        $playerConfirm = $data[1];
+        Partida::updateConfirmUserResult($idResultado,$playerConfirm,$user->id);
+        return response()->json([
+            'status' => true,
+            'message' => 'Confirmación añadida correctamente',
+            'datos' => $data[1],
+        ]);
+    }
+
+    public function getHistoryUser(Request $request){
+        $token = $request->bearerToken();
+        $user = User::getUser($token);
+        $history = User::getHistoryUser($user->id);
+        return response()->json([
+            'status' => true,
+            'history' => $history,
+        ]);
+    }
+
+    public function getStatisticsUser(Request $request){
+        $token = $request->bearerToken();
+        $user = User::getUser($token);
+        $statistics = User::getStatisticsUser($user->id);
+        return response()->json([
+            'status' => true,
+            'stastistics' => $statistics,
+        ]);
+    }
+
+    public function updateDataUser(Request $request){
+        $datos = $request->all();
+        $token = $request->bearerToken();
+        $user = User::getUser($token);
+        User::updateDateUser($datos,$user->id);
+        return response()->json([
+            'status' => true,
+            'datos' => $datos,
         ]);
     }
 
