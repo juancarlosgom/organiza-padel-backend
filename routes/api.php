@@ -39,6 +39,9 @@ Route::middleware('auth:sanctum')->group( function (){
     Route::get('/get-history-user',[\App\Http\Controllers\ApiController::class,'getHistoryUser']);
     Route::get('/get-statistics-user',[\App\Http\Controllers\ApiController::class,'getStatisticsUser']);
     Route::put('/update-data-user',[\App\Http\Controllers\ApiController::class,'updateDataUser']);
+    Route::post('/add-tournament',[\App\Http\Controllers\ApiController::class,'addTournament']);
+    Route::get('/get-tournaments',[\App\Http\Controllers\ApiController::class,'getTournaments']);
+    Route::post('/sing-up-tournament',[\App\Http\Controllers\ApiController::class,'singUpTournament']);
 });
 
 Route::get('/check-open-games',[\App\Http\Controllers\ApiController::class, 'checkOpenGames']);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Partida;
 use App\Models\Pista;
+use App\Models\Tournament;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
@@ -119,6 +120,15 @@ class ApiController extends Controller
             ],401);
         }
         $usuario = User::where('email',$request->email)->first();
+        if($usuario->email == 'admin@admin.com'){
+            return response()->json([
+                'status' => true,
+                'message' => 'Usuario logueado correctamente',
+                'date' => $usuario,
+                'token' => $usuario->createToken('API TOKEN')->plainTextToken,
+                'admin' => true,
+            ],200);
+        }
         return response()->json([
             'status' => true,
             'message' => 'Usuario logueado correctamente',
@@ -189,6 +199,13 @@ class ApiController extends Controller
     public function getFecha(Request $request){
         $datos = $request->all();
         $fecha = $datos[0];
+
+        if(Pista::checkDateMoreOneWeak($fecha)){
+            return response()->json([
+                'status' => false,
+                'message' => 'No se pueden reservar pistas con más de una semana de antelación',
+            ]);
+        }
         $tracksReserve = Pista::getTracksReserveDay($fecha);
         return response()->json([
             'status' => true,
@@ -405,6 +422,94 @@ class ApiController extends Controller
         return response()->json([
             'status' => true,
             'datos' => $datos,
+        ]);
+    }
+
+    public function addTournament(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'dateStart' => 'required',
+            'dateEnd' => 'required',
+            'price' => 'required|numeric',
+            'img' => 'required|file|mimes:jpg,jpeg',
+            'admin' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'error' => 400,
+            ]);
+            //return true;
+        }
+
+        $title = $request->input('title');
+        $description = $request->input('description');
+        $dateStart = $request->input('dateStart');
+        $dateEnd = $request->input('dateEnd');
+        $price = $request->input('price');
+        if($request->hasFile('img')){
+            $img = $request->file('img');
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Imagen no encontrada',
+            ]);
+        }
+
+        $isAdmin = $request->input('admin');
+
+        if($isAdmin == null || $isAdmin != 'isAdmin'){
+            return response()->json([
+                'status' => false,
+                'message' => 'No tienes permisos de administrador',
+            ]);
+        }
+
+        //Compruebo que no haya un torneo en las fechas seleccionadas
+        if(Tournament::checkOtherTournament($dateStart,$dateEnd)){
+            return response()->json([
+                'status' => false,
+                'error' => 402,
+                'message' => 'Han fallado las validaciones',
+            ]);
+        }
+
+       if(Tournament::addNewTournament($title,$description,$dateStart, $dateEnd, $price, $img)){
+            return response()->json([
+                'status' => false,
+                'error' => 401,
+                'message' => 'Han fallado las validaciones',
+            ]);
+        }
+
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Torneo creado correctamente',
+            'datos' => $img->getClientOriginalExtension(),
+        ]);
+    }
+
+    public function getTournaments(){
+        $tournaments = Tournament::getTournaments();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Torneos obtenidos correctamente',
+            'tournaments' => $tournaments,
+        ]);
+
+    }
+
+    public function singUpTournament(Request $request){
+        $data = $request->all();
+        Tournament::singUpTournament($data[0],$data[1]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Te has inscrito al torneo correctamente',
         ]);
     }
 

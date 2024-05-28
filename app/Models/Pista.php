@@ -108,6 +108,18 @@ class Pista extends Model
         return $tracksReserve;
     }
 
+    static function checkDateMoreOneWeak($date){
+        $dateCurrent = Partida::getDateToday();
+        $dateOnlyCurrent = Carbon::parse(Partida::getOnlyDate($dateCurrent));
+        $dateReserve = Carbon::parse($date);
+        $dateOnlyCurrent->addWeek();
+        if($dateOnlyCurrent->gt($dateReserve)){
+            return false;
+        }
+        return true;
+
+    }
+
     static function getGamesOpen($token){
         //Tabla user
         $user = User::getUser($token);
