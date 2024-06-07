@@ -372,6 +372,7 @@ class User extends Authenticatable
             ->where('id','=',$idUser)
             ->update([
                 'name' => $datosUser['name'],
+                'email' => $datosUser['email'],
             ]);
     }
 

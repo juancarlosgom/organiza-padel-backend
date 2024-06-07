@@ -112,8 +112,8 @@ class Tournament extends Model
     }
 
     static function singUpTournament($data,$idTorneo){
-        DB::table('parejastorneos')
-            ->insert([
+       $idCouple =  DB::table('parejastorneos')
+            ->insertGetId([
                 'idTorneo' => $idTorneo,
                 'nombre1' => $data['name1'],
                 'apellidos1' => $data['lastName1'],
@@ -127,8 +127,14 @@ class Tournament extends Model
                 'email' => $data['email'],
             ]);
 
-        self::updateCoupleTournament($idTorneo);
+       $tournament = self::getTournament($idTorneo);
+       if($tournament->parejasActuales + 1 > $tournament->parejasTotales){
+            self::deleteCouple($idCouple);
+           return true;
+       }
 
+        self::updateCoupleTournament($idTorneo);
+        return false;
     }
 
     static function reserveTracksForTournament($idTournament,$dateStart,$dateEnd){
@@ -201,6 +207,18 @@ class Tournament extends Model
         }
 
         return false;
+    }
+
+    static function getTournament($idTournament){
+        $tournament = DB::table('torneos')
+            ->where('idTorneo','=',$idTournament)
+            ->first();
+        return $tournament;
+    }
+    static function deleteCouple($idCouple){
+        DB::table('parejastorneos')
+            ->where('idPareja','=',$idCouple)
+            ->delete();
     }
 
 }

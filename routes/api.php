@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::controller(\App\Http\Controllers\ApiController::class)->group(function (){
     Route::post('/register','register')->name('resgister.user');
     Route::post('/login','login')->name('login.user');
+    Route::get('/get-tournaments','getTournaments');
+    Route::post('/sing-up-tournament','singUpTournament');
 });
 
 Route::middleware('auth:sanctum')->group( function (){
@@ -40,8 +42,7 @@ Route::middleware('auth:sanctum')->group( function (){
     Route::get('/get-statistics-user',[\App\Http\Controllers\ApiController::class,'getStatisticsUser']);
     Route::put('/update-data-user',[\App\Http\Controllers\ApiController::class,'updateDataUser']);
     Route::post('/add-tournament',[\App\Http\Controllers\ApiController::class,'addTournament']);
-    Route::get('/get-tournaments',[\App\Http\Controllers\ApiController::class,'getTournaments']);
-    Route::post('/sing-up-tournament',[\App\Http\Controllers\ApiController::class,'singUpTournament']);
+    Route::get('/get-players',[\App\Http\Controllers\ApiController::class,'getPlayers']);
 });
 
 Route::get('/check-open-games',[\App\Http\Controllers\ApiController::class, 'checkOpenGames']);

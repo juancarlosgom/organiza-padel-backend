@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Partida;
 use App\Models\Pista;
+use App\Models\Player;
 use App\Models\Tournament;
 use App\Models\User;
 use Carbon\Carbon;
@@ -76,16 +77,25 @@ class ApiController extends Controller
         $datosRecibidos = $request->input();
         //Validaciones
         $rules = [
+            'dni' => 'required|min:9|max:9',
             'nombre' => 'required',
+            'apellidos' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => 'required',
+            'password' => 'required|min:4|confirmed',
+            'password_confirmation' => 'required|min:4',
+            'telefono' => 'required|min:9|max:9',
+            'posicionPista' => 'required',
+            'tallaCamiseta' => 'required',
+            'categoria' => 'required',
+            'genero' => 'required',
+            'accept' => 'required',
         ];
         $validator = Validator::make($request->input(),$rules);
         if($validator->fails()){
-            return reponse()->json([
+            return response()->json([
                 'status' => false,
                 'errors' => $validator->errors()->all(),
-            ],400);
+            ]);
         }
         $usuairo = User::create([
             'name' => $datosRecibidos['nombre'],
@@ -111,13 +121,13 @@ class ApiController extends Controller
             return response()->json([
                 'status' => false,
                 'errors' => $validator->errors()->all(),
-            ],400);
+            ]);
         }
         if(!Auth::attempt($request->only('email','password'))){
             return response()->json([
                 'status' => false,
                 'message' => 'No autorizado',
-            ],401);
+            ]);
         }
         $usuario = User::where('email',$request->email)->first();
         if($usuario->email == 'admin@admin.com'){
@@ -506,10 +516,26 @@ class ApiController extends Controller
 
     public function singUpTournament(Request $request){
         $data = $request->all();
-        Tournament::singUpTournament($data[0],$data[1]);
+        if(Tournament::singUpTournament($data[0],$data[1])){
+            return response()->json([
+                'status' => false,
+                'message' => 'Ya no quedan plazas disponibles.',
+            ]);
+        }
         return response()->json([
             'status' => true,
-            'message' => 'Te has inscrito al torneo correctamente',
+            'message' => 'Te has inscrito al torneo correctamente.',
+        ]);
+    }
+
+    public function getPlayers(Request $request){
+
+        $players = Player::getPlayers();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Jugadores obtenidos correctamente.',
+            'players' => $players,
         ]);
     }
 
