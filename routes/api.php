@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->group( function (){
     Route::get('/get-players',[\App\Http\Controllers\ApiController::class,'getPlayers']);
 });
 
+//TODO: Esta acción falta configurarla con el robot, para lanzar la petición automaticamente
 Route::get('/check-open-games',[\App\Http\Controllers\ApiController::class, 'checkOpenGames']);
 
 

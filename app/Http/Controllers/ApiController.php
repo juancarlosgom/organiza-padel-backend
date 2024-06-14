@@ -148,7 +148,6 @@ class ApiController extends Controller
     }
 
     public function logout(Request $request){
-        //auth()->user()->tokens()->delete();
         $token = $request->getContent();
         User::removeTokensUser($token);
         return response()->json([
@@ -452,7 +451,6 @@ class ApiController extends Controller
                 'status' => false,
                 'error' => 400,
             ]);
-            //return true;
         }
 
         $title = $request->input('title');

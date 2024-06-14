@@ -27,19 +27,14 @@ class Tournament extends Model
             return true;
         }
 
-        //nameImg = idTournament
         $nameImg = self::insertNewTournament($title,$description,$dateStart, $dateEnd, $price, null);
 
-        // TODO : Subir image
-        //$img->getClientOriginalName();
-        //$nameImg = Str::slug(strtolower($title));
+        //Subir image
         $extension = $img->getClientOriginalExtension();
         $image = $nameImg.'.'.$extension;
         Storage::putFileAs('public/torneos',$img,$image);
 
         self::moveImgPublic($image);
-
-        //$urlImg = public_path('torneos/'.$image);
 
         self::updateUrlImgTournament($nameImg,$image);
 
@@ -63,7 +58,6 @@ class Tournament extends Model
     static function checkDateEnd($dateStart,$dateEnd){
         $dateTournamentStart = Carbon::parse($dateStart);
         $dateTournamentEnd = Carbon::parse($dateEnd);
-       // $dateTournamentStart->addWeek()->addDay();
         if($dateTournamentEnd->lt($dateTournamentStart)){
             return true;
         }

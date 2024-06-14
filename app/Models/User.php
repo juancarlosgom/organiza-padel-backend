@@ -335,26 +335,7 @@ class User extends Authenticatable
                 'partidasJugadas' => DB::raw("partidasJugadas + 1"),
                 'puntosRanking' => $userAll->ranking,
             ]);
-            //->increment($colum,1);
-
-        /*self::updateStatisticsUserGames($idUser);
-        self::updateStatisticsUserPoints($idUser);*/
     }
-
-    /*static function updateStatisticsUserGames($idUser){
-        DB::table('estadisticas')
-            ->where('idJugador','=',$idUser)
-            ->increment('partidasJugadas',1);
-    }
-
-    static function updateStatisticsUserPoints($idUser){
-        $userAll = self::getUserAll($idUser);
-        DB::table('estadisticas')
-            ->where('idJugador','=',$idUser)
-            ->update([
-                'puntosRanking' => $userAll->ranking,
-            ]);
-    }*/
 
     static function updateDateUser($datosUser,$idUser){
 

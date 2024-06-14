@@ -19,7 +19,6 @@ class Partida extends Model
         $reserve = self::getReserve($idPartida);
         $getReserveDay = Pista::getGamesDay($reserve->fecha,$player->idJugador);
         //Obtengo los de la partida
-        //$game = self::getOpenGame($idPartida);
 
         if(Pista::checkPlayerNotTwoGames($getReserveDay,$reserve->horaInicio)){
             return false;

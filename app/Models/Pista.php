@@ -13,7 +13,7 @@ class Pista extends Model
 
 
     static function reservarPista( $idPista,$horaInicio, $horaFin, $fecha,$usuario,$searchGame,$gender){
-        //TODO - Comprobar si el jugador ya juega ese día a la misma hora
+        //Comprobar si el jugador ya juega ese día a la misma hora
         $getReserveDay = self::getGamesDay($fecha,$usuario->id);
 
         if(self::checkPlayerNotTwoGames($getReserveDay,$horaInicio)){
@@ -85,8 +85,7 @@ class Pista extends Model
     }
 
     static function openGame($idReserve, $idTrack, $idPlayer1,$gender){
-        //TODO - Comprobar si el jugador ya juega ese día a la misma hora
-        //$getReserveDay = self::getGamesDay($fecha,$idPlayer1);
+        //Comprobar si el jugador ya juega ese día a la misma hora
 
         $usuarioAll = User::getUserAll($idPlayer1);
         DB::table('partidas')->insert([
@@ -124,15 +123,7 @@ class Pista extends Model
         //Tabla user
         $user = User::getUser($token);
         $idUser = $user->id;
-        /*$gamesOpen = DB::table('partidas as p')
-            ->join('reservaspistas as r','p.idReserva','=','r.idReserva')
-            ->join('jugadores as j1', 'p.jugador1', '=', 'j1.idJugador')
-            ->leftJoin('jugadores as j2', 'p.jugador2', '=', 'j2.idJugador')
-            ->leftJoin('jugadores as j3', 'p.jugador3', '=', 'j3.idJugador')
-            ->leftJoin('jugadores as j4', 'p.jugador4', '=', 'j4.idJugador')
-            ->select('p.*', 'j1.apellidos as jugador1','j2.apellidos as jugador2',
-            'j3.apellidos as jugador3','j4.apellidos as jugador4')
-            ->get();*/
+
         $gamesOpen = DB::table('partidas as p')
             ->join('reservaspistas as r','p.idReserva','=','r.idReserva')
             ->leftJoin('jugadores as j1', 'p.jugador1', '=', 'j1.idJugador')
@@ -143,20 +134,6 @@ class Pista extends Model
             ->leftjoin('users as u3', 'u3.id', '=', 'j3.idJugador')
             ->leftJoin('jugadores as j4', 'p.jugador4', '=', 'j4.idJugador')
             ->leftjoin('users as u4', 'u4.id', '=', 'j4.idJugador')
-            /*->where('p.jugador1','!=',$idUser)->whereNot('p.jugador1','=',$idUser)->orWhereNull('p.jugador1')
-            ->where('p.jugador2','!=',$idUser)->whereNot('p.jugador2','=',$idUser)->orWhereNull('p.jugador2')
-            ->where('p.jugador3','!=',$idUser)->whereNot('p.jugador3','=',$idUser)->orWhereNull('p.jugador3')
-            ->where('p.jugador4','!=',$idUser)->whereNot('p.jugador4','=',$idUser)->orWhereNull('p.jugador4')*/
-            /*->where(function ($query) use ($idUser) {
-                $query->whereNot('p.jugador1', '=', $idUser)
-                    ->orWhereNull('p.jugador1')
-                    ->orWhereNot('p.jugador2', '=', $idUser)
-                    ->orWhereNull('p.jugador2')
-                    ->orWhereNot('p.jugador3', '=', $idUser)
-                    ->orWhereNull('p.jugador3')
-                    ->orWhereNot('p.jugador4', '=', $idUser)
-                    ->orWhereNull('p.jugador4');
-            })*/
                 //Compruebo que no tenga ese idUsuario para saber si muestro o no
             ->where(function ($query) use ($idUser) {
                 $query->where(function ($query2) use ($idUser) {
@@ -177,7 +154,6 @@ class Pista extends Model
                     });
             })
             ->where('p.cerrada','=',0)
-            //->select('p.*', 'r.*', 'u1.name as nombre1','u2.name as nombre2','u3.name as nombre3','u4.name as nombre4')
             ->select('p.*', 'r.*' ,
                 'j1.apellidos as apellidos1', 'j1.posicionPista as pos1', 'j1.categoria as cat1', 'j1.genero as g1',
                 'j2.apellidos as apellidos2','j2.posicionPista as pos2', 'j2.categoria as cat2', 'j2.genero as g2',
